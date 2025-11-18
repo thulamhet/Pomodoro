@@ -6,16 +6,21 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        DashboardView(
+            viewModel: .init(
+                config: .init(
+                    focusDuration: 10,
+                    shortBreakDuration: 10,
+                    longBreakDuration: 10,
+                    sessionsBeforeLongBreak: 10
+                ),
+                timerService: TimerService()
+            )
+        )
     }
 }
 
