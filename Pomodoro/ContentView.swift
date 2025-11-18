@@ -13,7 +13,7 @@ struct ContentView: View {
         DashboardView(
             viewModel: .init(
                 config: .init(
-                    focusDuration: 10,
+                    focusDuration: 600,
                     shortBreakDuration: 10,
                     longBreakDuration: 10,
                     sessionsBeforeLongBreak: 10
@@ -24,6 +24,3 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    ContentView()
-}

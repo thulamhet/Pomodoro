@@ -20,9 +20,13 @@ struct DashboardView: View {
                 .monospacedDigit()
 
             // Progress
-            ProgressView(value: Double(viewModel.totalSeconds - viewModel.remainingSeconds),
-                         total: Double(viewModel.totalSeconds))
-                .padding(.horizontal, 40)
+            ProgressView(
+                value: Double(viewModel.totalSeconds - viewModel.remainingSeconds),
+                total: Double(viewModel.totalSeconds)
+            )
+            .animation(.easeInOut(duration: 0.3), value: viewModel.remainingSeconds)
+            .animation(.easeInOut(duration: 0.4), value: viewModel.totalSeconds) // animate phase changes
+            .padding(.horizontal, 40)
 
             Text("Session \(viewModel.currentSessionIndex)")
                 .font(.subheadline)
@@ -64,4 +68,8 @@ struct DashboardView: View {
         case .longBreak: return "Long Break"
         }
     }
+}
+
+#Preview {
+    ContentView()
 }
