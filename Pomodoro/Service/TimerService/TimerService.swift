@@ -20,13 +20,14 @@ actor TimerService: TimerServiceProtocol {
     func start(duration: Int,
                onTick: @escaping (Int) -> Void,
                onCompleted: @escaping () -> Void) async {
-        await stop() // cancel task cũ nếu có
+        await stop()
         remainingSeconds = duration
         isRunning = true
 
         task = Task {
             while remainingSeconds > 0 && !Task.isCancelled {
-                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                // Sleep for 1 second (in nanoseconds)
+                try? await Task.sleep(nanoseconds: 1_000_000_0)
                 if !isRunning { continue }
                 remainingSeconds -= 1
 

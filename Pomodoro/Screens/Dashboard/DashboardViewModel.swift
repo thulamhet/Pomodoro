@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import UserNotifications
 
 @MainActor
 final class DashboardViewModel: ObservableObject {
@@ -86,20 +87,54 @@ final class DashboardViewModel: ObservableObject {
     }
 
     private func handleCompletedPhase(skip: Bool = false) {
+        let nextPhase: PomodoroPhase
         switch phase {
         case .focus:
             if !skip { currentSessionIndex += 1 }
             if (currentSessionIndex - 1) % config.sessionsBeforeLongBreak == 0 {
-                setupForPhase(.longBreak)
+                nextPhase = .longBreak
             } else {
-                setupForPhase(.shortBreak)
+                nextPhase = .shortBreak
             }
         case .shortBreak, .longBreak:
-            setupForPhase(.focus)
+            nextPhase = .focus
         }
 
+        setupForPhase(nextPhase)
         isRunning = false
-        // Option: auto start phase mới
+
+        // Notify user that the previous phase completed and the next has begun.
+        scheduleCompletionNotification(nextPhase: nextPhase)
+        // Option: auto start next phase
         // start()
+    }
+
+    private func scheduleCompletionNotification(nextPhase: PomodoroPhase) {
+        let center = UNUserNotificationCenter.current()
+
+        let content = UNMutableNotificationContent()
+        switch nextPhase {
+        case .focus:
+            content.title = "Break finished"
+            content.body = "Time to focus!"
+        case .shortBreak:
+            content.title = "Focus finished"
+            content.body = "Take a short break."
+        case .longBreak:
+            content.title = "Focus finished"
+            content.body = "Take a long break."
+        }
+        content.sound = .default
+
+        // Fire immediately upon completion
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+
+        center.add(request) { error in
+            if let error = error {
+                // You may log or handle this as needed
+                print("Failed to schedule notification: \(error)")
+            }
+        }
     }
 }
